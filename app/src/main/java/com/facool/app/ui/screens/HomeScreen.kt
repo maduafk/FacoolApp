@@ -13,15 +13,32 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.facool.app.ui.Dest
 import com.facool.app.viewmodels.UserViewModel
 import com.facool.app.viewmodels.ScheduleViewModel
+import com.facool.app.viewmodels.AbsencesViewModel
 import java.time.*
 
 @Composable
-fun HomeScreen(onNavigate: (Dest) -> Unit, userVm: UserViewModel = viewModel(), scheduleVm: ScheduleViewModel = viewModel()) {
+fun HomeScreen(onNavigate: (Dest) -> Unit, userVm: UserViewModel = viewModel(), scheduleVm: ScheduleViewModel = viewModel(), absVm: AbsencesViewModel = viewModel()) {
     val nameState by userVm.userName.collectAsState(initial = null)
     val name = nameState?.trim().orEmpty()
     val greeting = if (name.isNotEmpty()) "Olá, $name!" else "Olá, estudante!"
 
     val courses by scheduleVm.courses.collectAsState(emptyList())
+
+    val absences by absVm.absences.collectAsState(emptyList())
+
+    // total de faltas de hoje (somando matérias do dia)
+    val todayDow = java.time.LocalDate.now().dayOfWeek
+    // nosso modelo usa 1..5 (Seg..Sex)
+    val todayIndex = when (todayDow) {
+        java.time.DayOfWeek.MONDAY -> 1
+        java.time.DayOfWeek.TUESDAY -> 2
+        java.time.DayOfWeek.WEDNESDAY -> 3
+        java.time.DayOfWeek.THURSDAY -> 4
+        java.time.DayOfWeek.FRIDAY -> 5
+        else -> 0 // fim de semana não conta
+    }
+    val todayCourseIds = courses.filter { it.dayOfWeek == todayIndex }.map { it.id }.toSet()
+    val todayAbsences = absences.filter { it.courseId in todayCourseIds }.sumOf { it.count }
 
     // calcula próxima aula real
     val next by remember(courses) { mutableStateOf(findNextClass(courses)) }
@@ -65,13 +82,14 @@ fun HomeScreen(onNavigate: (Dest) -> Unit, userVm: UserViewModel = viewModel(), 
                     val hm = "%02d:%02d".format(time.hour, time.minute)
                     val remaining = Duration.between(LocalDateTime.now(), time).toMinutes().coerceAtLeast(0)
                     val remText = if (remaining >= 60) "em ${remaining/60}h${(remaining%60).toString().padStart(2,'0')}" else "em ${remaining}min"
-                    Text("${c.name} - ${hm} - ${c.location}")
+                    val absCount = absences.firstOrNull { it.courseId == c.id }?.count ?: 0
+                    Text("${c.name} - ${hm} - ${c.location}  •  Faltas: $absCount")
                     Text(remText, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary)
                 } else {
                     Text("Sem aulas cadastradas para os próximos dias.")
                 }
                 Divider()
-                Text("Resumo de hoje: faltas 0 • 2 tarefas", style = MaterialTheme.typography.bodyMedium)
+                Text("Resumo de hoje: faltas " + todayAbsences + " • 2 tarefas", style = MaterialTheme.typography.bodyMedium)
             }
         }
 

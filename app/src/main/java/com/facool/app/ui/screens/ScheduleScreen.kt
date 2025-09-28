@@ -9,11 +9,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.facool.app.viewmodels.ScheduleViewModel
+import com.facool.app.viewmodels.AbsencesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScheduleScreen(vm: ScheduleViewModel = viewModel()) {
+fun ScheduleScreen(vm: ScheduleViewModel = viewModel(), absVm: AbsencesViewModel = viewModel()) {
     val courses by vm.courses.collectAsState(emptyList())
+    val absences by absVm.absences.collectAsState(emptyList())
     var name by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
     var dayIndex by remember { mutableStateOf(0) } // 0..4 => Mon..Fri
@@ -59,7 +61,9 @@ fun ScheduleScreen(vm: ScheduleViewModel = viewModel()) {
                 ElevatedCard {
                     Column(Modifier.padding(12.dp)) {
                         Text("${c.name} - ${formatTime(c.startTimeMinutes)}")
+                        val abs = absences.firstOrNull { it.courseId == c.id }?.count ?: 0
                         Text(c.location, style = MaterialTheme.typography.bodySmall)
+                        Text("Faltas: $abs", style = MaterialTheme.typography.bodySmall)
                         val daysShort = listOf("Seg", "Ter", "Qua", "Qui", "Sex")
                         Text("Dia da semana: ${daysShort[(c.dayOfWeek-1).coerceIn(0,4)]}")
                         TextButton(onClick = { vm.removeCourse(c.id) }) { Text("Remover") }
