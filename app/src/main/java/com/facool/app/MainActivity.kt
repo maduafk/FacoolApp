@@ -11,11 +11,9 @@ import androidx.compose.material3.Surface
 import com.facool.app.ui.FacoolApp
 
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Request notifications on Android 13+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerForActivityResult(ActivityResultContracts.RequestPermission()) {}.launch(
                 Manifest.permission.POST_NOTIFICATIONS
@@ -24,9 +22,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                Surface {
-                    FacoolApp()
-                }
+                Surface { FacoolApp() }
             }
         }
     }

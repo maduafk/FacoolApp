@@ -19,7 +19,7 @@ class ScheduleViewModel(app: Application) : AndroidViewModel(app) {
     fun addCourse(name: String, location: String, day: Int, startMin: Int) = viewModelScope.launch {
         if (name.isBlank()) return@launch
         val current = repo.courses.first().toMutableList()
-        current.add(Course(UUID.randomUUID().toString(), name, location, day.coerceIn(1,7), startMin.coerceIn(0, 24*60-1)))
+        current.add(Course(UUID.randomUUID().toString(), name, location, day.coerceIn(1,5), startMin.coerceIn(0, 24*60-1)))
         repo.saveCourses(current)
     }
 

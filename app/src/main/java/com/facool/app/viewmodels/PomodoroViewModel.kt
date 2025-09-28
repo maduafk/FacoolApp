@@ -49,9 +49,7 @@ class PomodoroViewModel(app: Application) : AndroidViewModel(app) {
     fun updateFocus(v: Int) = viewModelScope.launch { repo.setPomodoro(v.coerceIn(5, 120), uiState.value.breakMinutes) }
     fun updateBreak(v: Int) = viewModelScope.launch { repo.setPomodoro(uiState.value.focusMinutes, v.coerceIn(1, 60)) }
 
-    fun toggle() {
-        if (_isRunning.value) pause() else start()
-    }
+    fun toggle() { if (_isRunning.value) pause() else start() }
 
     private fun start() {
         _isRunning.value = true
@@ -66,10 +64,7 @@ class PomodoroViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    private fun pause() {
-        _isRunning.value = false
-        ticker?.cancel()
-    }
+    private fun pause() { _isRunning.value = false; ticker?.cancel() }
 
     fun reset() {
         pause()
@@ -78,13 +73,12 @@ class PomodoroViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private fun onPhaseEnd() {
-        // Notify via system (sound + vibration handled in Activity/NotificationChannel when posted)
         val context = getApplication<Application>().applicationContext
         val mgr = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notification = NotificationCompat.Builder(context, "pomodoro_channel")
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle("Facool")
-            .setContentText("${uiState.value.phaseLabel} finalizado!")
+            .setContentText("${'$'}{uiState.value.phaseLabel} finalizado!")
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))

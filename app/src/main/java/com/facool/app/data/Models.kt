@@ -7,8 +7,8 @@ data class Course(
     val id: String,
     val name: String,
     val location: String,
-    val dayOfWeek: Int, // 1-7 (Mon=1)
-    val startTimeMinutes: Int, // e.g., 9*60+30
+    val dayOfWeek: Int, // 1..5 (Mon..Fri)
+    val startTimeMinutes: Int
 )
 
 @Serializable

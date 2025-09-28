@@ -8,12 +8,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.facool.app.ui.Dest
 import com.facool.app.viewmodels.UserViewModel
 
 @Composable
-fun HomeScreen(nav: NavController, vm: UserViewModel = viewModel()) {
+fun HomeScreen(onNavigate: (Dest) -> Unit, vm: UserViewModel = viewModel()) {
     val nameState by vm.userName.collectAsState(initial = null)
     val name = nameState?.trim().orEmpty()
     val greeting = if (name.isNotEmpty()) "Olá, $name!" else "Olá, estudante!"
@@ -28,32 +27,21 @@ fun HomeScreen(nav: NavController, vm: UserViewModel = viewModel()) {
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("Para personalizar sua experiência, digite seu nome.")
-                    OutlinedTextField(
-                        value = tempName,
-                        onValueChange = { tempName = it },
-                        label = { Text("Seu nome") }
-                    )
+                    OutlinedTextField(value = tempName, onValueChange = { tempName = it }, label = { Text("Seu nome") })
                 }
             },
             confirmButton = {
-                Button(
-                    enabled = tempName.isNotBlank(),
-                    onClick = { vm.setUserName(tempName.trim()) }
-                ) { Text("Começar") }
+                Button(enabled = tempName.isNotBlank(), onClick = { vm.setUserName(tempName.trim()) }) { Text("Começar") }
             },
-            dismissButton = {
-                TextButton(onClick = { vm.setUserName("") }) { Text("Pular") }
-            }
+            dismissButton = { TextButton(onClick = { vm.setUserName("") }) { Text("Pular") } }
         )
     }
 
     Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        // Top section: logo + greeting + slogan
-        Text(text = "Facool", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Text(text = greeting, style = MaterialTheme.typography.titleMedium)
-        Text(text = "Seu estudo, seu ritmo.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
+        Text("Facool", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text(greeting, style = MaterialTheme.typography.titleMedium)
+        Text("Seu estudo, seu ritmo.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
 
-        // Quick view (placeholder)
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("Próxima aula", style = MaterialTheme.typography.titleMedium)
@@ -63,14 +51,13 @@ fun HomeScreen(nav: NavController, vm: UserViewModel = viewModel()) {
             }
         }
 
-        // Big action cards
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            ActionCard("Pomodoro", modifier = Modifier.weight(1f)) { nav.navigate(Dest.Pomodoro.route) }
-            ActionCard("Cronograma", modifier = Modifier.weight(1f)) { nav.navigate(Dest.Schedule.route) }
+            ActionCard("Pomodoro", modifier = Modifier.weight(1f)) { onNavigate(Dest.Pomodoro) }
+            ActionCard("Cronograma", modifier = Modifier.weight(1f)) { onNavigate(Dest.Schedule) }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            ActionCard("Faltas", modifier = Modifier.weight(1f)) { nav.navigate(Dest.Absences.route) }
-            ActionCard("Perfil", modifier = Modifier.weight(1f)) { nav.navigate(Dest.Profile.route) }
+            ActionCard("Faltas", modifier = Modifier.weight(1f)) { onNavigate(Dest.Absences) }
+            ActionCard("Perfil", modifier = Modifier.weight(1f)) { onNavigate(Dest.Profile) }
         }
     }
 }

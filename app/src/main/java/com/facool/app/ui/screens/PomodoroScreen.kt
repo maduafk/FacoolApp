@@ -18,20 +18,13 @@ fun PomodoroScreen(vm: PomodoroViewModel = viewModel()) {
         Text("Pomodoro", style = MaterialTheme.typography.headlineSmall)
         Text(ui.phaseLabel)
 
-        Text(
-            text = ui.formattedTime,
-            style = MaterialTheme.typography.displaySmall,
-            textAlign = TextAlign.Center
-        )
+        Text(text = ui.formattedTime, style = MaterialTheme.typography.displaySmall, textAlign = TextAlign.Center)
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Button(onClick = { vm.toggle() }) {
-                Text(if (ui.isRunning) "Pausar" else "Iniciar")
-            }
+            Button(onClick = { vm.toggle() }) { Text(if (ui.isRunning) "Pausar" else "Iniciar") }
             OutlinedButton(onClick = { vm.reset() }) { Text("Resetar") }
         }
 
-        // Settings
         ElevatedCard(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("Configurações rápidas")
@@ -52,7 +45,7 @@ fun PomodoroScreen(vm: PomodoroViewModel = viewModel()) {
 private fun NumberAdjust(value: Int, onChange: (Int) -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedButton(onClick = { onChange((value - 1).coerceAtLeast(1)) }) { Text("-") }
-        Text("$value")
+        Text("${'$'}value")
         OutlinedButton(onClick = { onChange(value + 1) }) { Text("+") }
     }
 }

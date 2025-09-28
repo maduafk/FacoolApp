@@ -24,7 +24,7 @@ fun AbsencesScreen(vm: AbsencesViewModel = viewModel()) {
                 ElevatedCard {
                     Column(Modifier.padding(12.dp)) {
                         Text(c.name, style = MaterialTheme.typography.titleMedium)
-                        Text("Faltas: $count")
+                        Text("Faltas: ${'$'}count")
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(onClick = { vm.updateAbsences(c.id, count + 1) }) { Text("+1 falta") }
                             OutlinedButton(onClick = { vm.updateAbsences(c.id, (count - 1).coerceAtLeast(0)) }) { Text("-1") }
