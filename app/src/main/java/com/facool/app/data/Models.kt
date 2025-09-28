@@ -16,3 +16,12 @@ data class Absence(
     val courseId: String,
     val count: Int
 )
+
+@Serializable
+data class Task(
+    val id: String,
+    val courseId: String,
+    val title: String,
+    val done: Boolean = false,
+    val dueDay: Int = 0 // 1..5 or 0 (any)
+)

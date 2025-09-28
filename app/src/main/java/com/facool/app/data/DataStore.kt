@@ -17,6 +17,7 @@ object Keys {
     val USER_NAME = stringPreferencesKey("user_name")
     val COURSES_JSON = stringPreferencesKey("courses_json")
     val ABSENCES_JSON = stringPreferencesKey("absences_json")
+    val TASKS_JSON = stringPreferencesKey("tasks_json")
     val POMO_FOCUS_MIN = intPreferencesKey("pomo_focus_min")
     val POMO_BREAK_MIN = intPreferencesKey("pomo_break_min")
 }
@@ -35,9 +36,7 @@ class FacoolRepository(private val context: Context) {
     }
 
     suspend fun saveCourses(list: List<Course>) {
-        context.dataStore.edit { prefs ->
-            prefs[Keys.COURSES_JSON] = json.encodeToString(list)
-        }
+        context.dataStore.edit { prefs -> prefs[Keys.COURSES_JSON] = json.encodeToString(list) }
     }
 
     val absences: Flow<List<Absence>> = context.dataStore.data.map {
@@ -45,9 +44,15 @@ class FacoolRepository(private val context: Context) {
     }
 
     suspend fun saveAbsences(list: List<Absence>) {
-        context.dataStore.edit { prefs ->
-            prefs[Keys.ABSENCES_JSON] = json.encodeToString(list)
-        }
+        context.dataStore.edit { prefs -> prefs[Keys.ABSENCES_JSON] = json.encodeToString(list) }
+    }
+
+    val tasks: Flow<List<Task>> = context.dataStore.data.map {
+        it[Keys.TASKS_JSON]?.let { js -> json.decodeFromString(js) } ?: emptyList()
+    }
+
+    suspend fun saveTasks(list: List<Task>) {
+        context.dataStore.edit { prefs -> prefs[Keys.TASKS_JSON] = json.encodeToString(list) }
     }
 
     val pomodoroFocusMin: Flow<Int> = context.dataStore.data.map { it[Keys.POMO_FOCUS_MIN] ?: 25 }
