@@ -35,6 +35,9 @@ fun HomeScreen(
     val tasks by tasksVm.tasks.collectAsState(emptyList())
 
     val next by remember(courses) { mutableStateOf(findNextClass(courses)) }
+    val nextPendingTasks = remember(tasks, next) {
+        next?.let { (c, _) -> tasks.count { it.courseId == c.id && !it.done && (it.dueDay == 0 || it.dueDay == c.dayOfWeek) } } ?: 0
+    }
 
     // cálculo de resumo do dia
     val todayDow = LocalDate.now().dayOfWeek
@@ -96,13 +99,13 @@ fun HomeScreen(
                     val remaining = Duration.between(LocalDateTime.now(), time).toMinutes().coerceAtLeast(0)
                     val remText = if (remaining >= 60) "em ${remaining/60}h${(remaining%60).toString().padStart(2,'0')}" else "em ${remaining}min"
                     val absCount = absences.firstOrNull { it.courseId == c.id }?.count ?: 0
-                    Text("${c.name} - ${hm} - ${c.location}")
+                    Text("${c.name} - ${hm} - ${c.location} ")
                     Text(remText, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary)
                 } else {
                     Text("Sem aulas cadastradas para os próximos dias.")
                 }
                 Divider()
-                Text("Resumo de hoje: faltas $todayAbsences • tarefas pendentes $todayPendingTasks", style = MaterialTheme.typography.bodyMedium)
+                Text("Resumo de hoje: faltas $todayAbsences • tarefas pendentes " + nextPendingTasks, style = MaterialTheme.typography.bodyMedium)
             }
         }
 
