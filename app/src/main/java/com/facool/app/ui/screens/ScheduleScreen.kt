@@ -58,10 +58,10 @@ fun ScheduleScreen(vm: ScheduleViewModel = viewModel()) {
             items(courses, key = { it.id }) { c ->
                 ElevatedCard {
                     Column(Modifier.padding(12.dp)) {
-                        Text("${'$'}{c.name} - ${'$'}{formatTime(c.startTimeMinutes)}")
+                        Text("${c.name} - ${formatTime(c.startTimeMinutes)}")
                         Text(c.location, style = MaterialTheme.typography.bodySmall)
                         val daysShort = listOf("Seg", "Ter", "Qua", "Qui", "Sex")
-                        Text("Dia da semana: ${'$'}{daysShort[(c.dayOfWeek-1).coerceIn(0,4)]}")
+                        Text("Dia da semana: ${daysShort[(c.dayOfWeek-1).coerceIn(0,4)]}")
                         TextButton(onClick = { vm.removeCourse(c.id) }) { Text("Remover") }
                     }
                 }

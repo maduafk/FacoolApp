@@ -4,38 +4,35 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.facool.app.ui.screens.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Text
+import com.facool.app.ui.screens.*
 import kotlinx.coroutines.launch
 
 enum class Dest(val label: String, val icon: ImageVector) {
-    Home("Início", androidx.compose.material.icons.Icons.Filled.Home),
-    Schedule("Cronograma", androidx.compose.material.icons.Icons.Filled.Schedule),
-    Absences("Faltas", androidx.compose.material.icons.Icons.Filled.List),
-    Pomodoro("Pomodoro", androidx.compose.material.icons.Icons.Filled.Timer),
-    Profile("Perfil", androidx.compose.material.icons.Icons.Filled.Person),
+    Home("Início", Icons.Filled.Home),
+    Schedule("Cronograma", Icons.Filled.Schedule),
+    Absences("Faltas", Icons.Filled.List),
+    Pomodoro("Pomodoro", Icons.Filled.Timer),
+    Profile("Perfil", Icons.Filled.Person),
 }
 
-@Composable
 @OptIn(ExperimentalFoundationApi::class)
+@Composable
 fun FacoolApp() {
     val context = LocalContext.current
     LaunchedEffect(Unit) { createPomodoroChannel(context) }

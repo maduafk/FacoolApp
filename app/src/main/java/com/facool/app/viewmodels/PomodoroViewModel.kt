@@ -78,7 +78,7 @@ class PomodoroViewModel(app: Application) : AndroidViewModel(app) {
         val notification = NotificationCompat.Builder(context, "pomodoro_channel")
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle("Facool")
-            .setContentText("${'$'}{uiState.value.phaseLabel} finalizado!")
+            .setContentText("${uiState.value.phaseLabel} finalizado!")
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))

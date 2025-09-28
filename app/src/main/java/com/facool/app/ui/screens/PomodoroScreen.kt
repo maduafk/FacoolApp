@@ -45,7 +45,7 @@ fun PomodoroScreen(vm: PomodoroViewModel = viewModel()) {
 private fun NumberAdjust(value: Int, onChange: (Int) -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedButton(onClick = { onChange((value - 1).coerceAtLeast(1)) }) { Text("-") }
-        Text("${'$'}value")
+        Text(value.toString())
         OutlinedButton(onClick = { onChange(value + 1) }) { Text("+") }
     }
 }
