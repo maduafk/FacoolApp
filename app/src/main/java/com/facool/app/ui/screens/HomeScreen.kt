@@ -1,5 +1,6 @@
 package com.facool.app.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -7,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.facool.app.ui.Dest
 import com.facool.app.viewmodels.UserViewModel
@@ -45,6 +47,12 @@ fun HomeScreen(onNavigate: (Dest) -> Unit, userVm: UserViewModel = viewModel(), 
     }
 
     Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Image(
+            painter = painterResource(id = com.facool.app.R.drawable.logo_facool),
+            contentDescription = "Logo Facool",
+            modifier = Modifier.size(80.dp).align(Alignment.CenterHorizontally)
+        )
+
         Text("Facool", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
         Text(greeting, style = MaterialTheme.typography.titleMedium)
         Text("Seu estudo, seu ritmo.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
