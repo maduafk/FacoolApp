@@ -20,6 +20,8 @@ import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Person
+import com.facool.app.data.FacoolRepository
+import com.facool.app.data.FirebaseService
 import com.facool.app.ui.screens.*
 import kotlinx.coroutines.launch
 
@@ -35,37 +37,81 @@ enum class Dest(val label: String, val icon: ImageVector) {
 @Composable
 fun FacoolApp() {
     val context = LocalContext.current
-    LaunchedEffect(Unit) { createPomodoroChannel(context) }
-
-    val tabs = remember { Dest.values().toList() }
-    val pagerState = rememberPagerState(initialPage = 0, pageCount = { tabs.size })
+    val firebaseService = remember { FirebaseService() }
+    val repository = remember { FacoolRepository(context) }
+    
+    var isAuthenticated by remember { mutableStateOf(firebaseService.currentUser != null) }
     val scope = rememberCoroutineScope()
+    
+    LaunchedEffect(Unit) { 
+        createPomodoroChannel(context)
+        // Verificar autenticação inicial
+        isAuthenticated = firebaseService.currentUser != null
+        if (isAuthenticated) {
+            repository.syncAllFromFirebase()
+        }
+    }
+    
+    // Observar mudanças no estado de autenticação
+    LaunchedEffect(firebaseService.currentUser) {
+        isAuthenticated = firebaseService.currentUser != null
+        if (isAuthenticated) {
+            repository.syncAllFromFirebase()
+        }
+    }
 
-    Scaffold(
-        bottomBar = {
-            NavigationBar {
-                val current = pagerState.currentPage
-                tabs.forEachIndexed { index, dest ->
-                    NavigationBarItem(
-                        selected = current == index,
-                        onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
-                        icon = { Icon(dest.icon, contentDescription = dest.label) },
-                        label = { Text(dest.label) }
-                    )
+    if (!isAuthenticated) {
+        AuthScreen(
+            onAuthSuccess = {
+                isAuthenticated = true
+                scope.launch {
+                    repository.syncAllFromFirebase()
+                }
+            },
+            firebaseService = firebaseService
+        )
+    } else {
+        val tabs = remember { Dest.values().toList() }
+        val pagerState = rememberPagerState(initialPage = 0, pageCount = { tabs.size })
+
+        Scaffold(
+            bottomBar = {
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                ) {
+                    val current = pagerState.currentPage
+                    tabs.forEachIndexed { index, dest ->
+                        NavigationBarItem(
+                            selected = current == index,
+                            onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
+                            icon = { Icon(dest.icon, contentDescription = dest.label) },
+                            label = { Text(dest.label) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                indicatorColor = MaterialTheme.colorScheme.primaryContainer
+                            )
+                        )
+                    }
                 }
             }
-        }
-    ) { padding ->
-        HorizontalPager(state = pagerState, modifier = Modifier.padding(padding)) { page ->
-            when (tabs[page]) {
-                Dest.Home -> HomeScreen(onNavigate = { dest ->
-                    val target = tabs.indexOf(dest)
-                    if (target >= 0) scope.launch { pagerState.animateScrollToPage(target) }
-                })
-                Dest.Schedule -> ScheduleScreen()
-                Dest.Absences -> AbsencesScreen()
-                Dest.Pomodoro -> PomodoroScreen()
-                Dest.Profile -> ProfileScreen()
+        ) { padding ->
+            HorizontalPager(state = pagerState, modifier = Modifier.padding(padding)) { page ->
+                when (tabs[page]) {
+                    Dest.Home -> HomeScreen(onNavigate = { dest ->
+                        val target = tabs.indexOf(dest)
+                        if (target >= 0) scope.launch { pagerState.animateScrollToPage(target) }
+                    })
+                    Dest.Schedule -> ScheduleScreen()
+                    Dest.Absences -> AbsencesScreen()
+                    Dest.Pomodoro -> PomodoroScreen()
+                    Dest.Profile -> ProfileScreen(
+                        onSignOut = {
+                            firebaseService.signOut()
+                            isAuthenticated = false
+                        }
+                    )
+                }
             }
         }
     }
