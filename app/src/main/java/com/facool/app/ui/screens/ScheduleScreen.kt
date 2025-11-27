@@ -85,7 +85,8 @@ fun ScheduleScreen(vm: ScheduleViewModel = viewModel(), absVm: AbsencesViewModel
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedContainerColor = MaterialTheme.colorScheme.surface,
                                 unfocusedContainerColor = MaterialTheme.colorScheme.surface
-                            )
+                            ),
+                            singleLine = false
                         )
                         OutlinedTextField(
                             value = location,
@@ -101,7 +102,8 @@ fun ScheduleScreen(vm: ScheduleViewModel = viewModel(), absVm: AbsencesViewModel
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedContainerColor = MaterialTheme.colorScheme.surface,
                                 unfocusedContainerColor = MaterialTheme.colorScheme.surface
-                            )
+                            ),
+                            singleLine = false
                         )
 
                         ExposedDropdownMenuBox(
@@ -268,7 +270,8 @@ fun ScheduleScreen(vm: ScheduleViewModel = viewModel(), absVm: AbsencesViewModel
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedContainerColor = MaterialTheme.colorScheme.surface,
                                     unfocusedContainerColor = MaterialTheme.colorScheme.surface
-                                )
+                                ),
+                                singleLine = false
                             )
                             Button(
                                 onClick = {

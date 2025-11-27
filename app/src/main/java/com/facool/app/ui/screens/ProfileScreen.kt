@@ -24,7 +24,7 @@ fun ProfileScreen(
     val focus by vm.focus.collectAsState(25)
     val brk by vm.brk.collectAsState(5)
     val firebaseService = remember { FirebaseService() }
-    val userEmail = firebaseService.currentUser?.email ?: ""
+    val userEmail = firebaseService.currentUser?.email?.takeIf { it.isNotEmpty() } ?: ""
 
     Column(
         Modifier

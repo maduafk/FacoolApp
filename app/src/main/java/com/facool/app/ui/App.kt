@@ -15,22 +15,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.*
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.facool.app.data.FacoolRepository
 import com.facool.app.data.FirebaseService
 import com.facool.app.ui.screens.*
+import com.facool.app.viewmodels.PhotosViewModel
 import kotlinx.coroutines.launch
 
 enum class Dest(val label: String, val icon: ImageVector) {
     Home("Início", Icons.Filled.Home),
     Schedule("Cronograma", Icons.Filled.Schedule),
     Absences("Faltas", Icons.Filled.List),
+    Grades("Notas", Icons.Filled.Grade),
+    Exams("Provas", Icons.Filled.Event),
     Pomodoro("Pomodoro", Icons.Filled.Timer),
-    Profile("Perfil", Icons.Filled.Person),
+    Photos("Fotos", Icons.Filled.Photo),
+    Profile("Perfil", Icons.Filled.Person);
+
+    val isMain: Boolean
+        get() = this in listOf(Home, Schedule, Grades, Profile)
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -71,18 +75,22 @@ fun FacoolApp() {
             firebaseService = firebaseService
         )
     } else {
-        val tabs = remember { Dest.values().toList() }
-        val pagerState = rememberPagerState(initialPage = 0, pageCount = { tabs.size })
+        val allTabs = remember { Dest.values().toList() }
+        val mainTabs = remember { allTabs.filter { it.isMain } }
+        val pagerState = rememberPagerState(initialPage = 0, pageCount = { allTabs.size })
 
         Scaffold(
             bottomBar = {
                 NavigationBar(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant
                 ) {
-                    val current = pagerState.currentPage
-                    tabs.forEachIndexed { index, dest ->
+                    val currentTab = allTabs[pagerState.currentPage]
+                    
+                    mainTabs.forEach { dest ->
+                        val index = allTabs.indexOf(dest)
+                        val isSelected = if (currentTab.isMain) currentTab == dest else dest == Dest.Home
                         NavigationBarItem(
-                            selected = current == index,
+                            selected = isSelected,
                             onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
                             icon = { Icon(dest.icon, contentDescription = dest.label) },
                             label = { Text(dest.label) },
@@ -97,18 +105,28 @@ fun FacoolApp() {
             }
         ) { padding ->
             HorizontalPager(state = pagerState, modifier = Modifier.padding(padding)) { page ->
-                when (tabs[page]) {
+                when (allTabs[page]) {
                     Dest.Home -> HomeScreen(onNavigate = { dest ->
-                        val target = tabs.indexOf(dest)
+                        val target = allTabs.indexOf(dest)
                         if (target >= 0) scope.launch { pagerState.animateScrollToPage(target) }
                     })
                     Dest.Schedule -> ScheduleScreen()
                     Dest.Absences -> AbsencesScreen()
+                    Dest.Grades -> GradesScreen()
+                    Dest.Exams -> ExamsScreen()
                     Dest.Pomodoro -> PomodoroScreen()
+                    Dest.Photos -> {
+                        val photosViewModel: PhotosViewModel = viewModel()
+                        PhotosScreen(photosViewModel)
+                    }
                     Dest.Profile -> ProfileScreen(
                         onSignOut = {
-                            firebaseService.signOut()
-                            isAuthenticated = false
+                            scope.launch {
+                                // Limpar dados locais antes de fazer logout
+                                repository.clearAllLocalData()
+                                firebaseService.signOut()
+                                isAuthenticated = false
+                            }
                         }
                     )
                 }

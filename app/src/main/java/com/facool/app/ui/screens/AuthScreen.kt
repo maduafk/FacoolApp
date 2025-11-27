@@ -211,21 +211,24 @@ fun AuthScreen(
                                 
                                 isLoading = false
                                 
-                                result.onSuccess {
-                                    onAuthSuccess()
-                                }.onFailure { exception ->
-                                    errorMessage = when {
-                                        exception.message?.contains("email") == true -> 
-                                            "Email inválido ou já em uso"
-                                        exception.message?.contains("password") == true -> 
-                                            "Senha deve ter pelo menos 6 caracteres"
-                                        exception.message?.contains("user-not-found") == true -> 
-                                            "Usuário não encontrado"
-                                        exception.message?.contains("wrong-password") == true -> 
-                                            "Senha incorreta"
-                                        else -> exception.message ?: "Erro ao ${if (isLogin) "fazer login" else "criar conta"}"
+                                result.fold(
+                                    onSuccess = {
+                                        onAuthSuccess()
+                                    },
+                                    onFailure = { exception ->
+                                        errorMessage = when {
+                                            exception.message?.contains("email") == true -> 
+                                                "Email inválido ou já em uso"
+                                            exception.message?.contains("password") == true -> 
+                                                "Senha deve ter pelo menos 6 caracteres"
+                                            exception.message?.contains("user-not-found") == true -> 
+                                                "Usuário não encontrado"
+                                            exception.message?.contains("wrong-password") == true -> 
+                                                "Senha incorreta"
+                                            else -> exception.message ?: "Erro ao ${if (isLogin) "fazer login" else "criar conta"}"
+                                        }
                                     }
-                                }
+                                )
                             }
                         },
                         modifier = Modifier
