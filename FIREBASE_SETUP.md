@@ -36,6 +36,7 @@ Para habilitar:
 
 1. Após registrar o app, baixe o arquivo `google-services.json`
 2. Coloque o arquivo em: `app/google-services.json`
+3. Esse arquivo fica só na sua máquina. Ele já está no `.gitignore` e não deve ser commitado. O repositório traz apenas `app/google-services.json.example`, sem chaves.
 
 ## 4. Habilitar serviços no Firebase
 
